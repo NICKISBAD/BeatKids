@@ -39,6 +39,14 @@ end
 
 _G.AutoParry = false
 
+Tab:AddButton({
+       Name = "Safezone",
+	Callback = function()
+		game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3.81075764, 100.480156, -6167.9248, -0.99361527, 0.00642877631, -0.11263819, -7.7722987e-05, 0.998335958, 0.0576654263, 0.112821475, 0.0573060028, -0.99196136)
+	end
+})
+
 Tab:AddToggle({
 	Name = "AutoParry (face target, hold sword)",
 	Callback = function(v)
