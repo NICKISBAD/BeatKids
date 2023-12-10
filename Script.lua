@@ -69,7 +69,7 @@ spawn(function()
 				if table.find({"Meleer Militant", "Gunner Militant", "Grenader Militant", "Medic Militant", "Combatant Militant", "Brute Militant", "Viper", "Juggernaut"}, v.Name) then
 					repeat CannonDamage(v:WaitForChild("HumanoidRootPart").Position) wait() until not v
 			  end
-	       end
+	             end
 		end
 	end
 end)
