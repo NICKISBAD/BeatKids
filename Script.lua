@@ -172,7 +172,7 @@ spawn(function()
 end)
 
 local cooldownCounter = 0
-local cooldownDuration = 1 -- Adjusted for 0.5-second break every 300 loops
+local cooldownDuration = 1
 
 -- Loop for Desert
 spawn(function()
@@ -234,38 +234,102 @@ local Tab2 = _G.Window:MakeTab({
 	PremiumOnly = false
 })
 
-local function B2(GunName)
+local path1 = game.ReplicatedStorage.Modules.Tools.Gun.Settings
+
+function inf(gun)
+	local a = require(path1[gun])
+	
+	a.AmmoPerMag = 9999
+	a.FireRate = 0.1
+	a.Automatic = true
+	a.Spread = 1
+	a.MaxPierce = 999
+end
+
+function BulletBuff(gun)
+	local a = require(path1[gun])
+	
+	a.ProjectilesPerShot = 30
+	a.ProjectileSpeed = 999
+end
+
+function InstaReload(gun)
+	local a = require(path1[gun])
+	
+	a.ReloadTime = 0
+end
+
+local function B2()
 	Tab2:AddButton({
-		Name = GunName .. " Mod",
+		Name = "All Guns inf Ammo + full auto, no spread",
 		Callback = function()
-			GunMod(GunName)
+			for i,v in pairs(path1:GetChildren()) do
+				if v:IsA("ModuleScript") and v.Name ~= "Minigun" then
+				    inf(v.Name)
+				end
+			end
 		end
 	})
 end
 
-B2("Pistol")
-B2("Assault Rifle")
-B2("Shotgun")
-B2("Sniper Rifle")
-B2("Blunder Buss")
-B2("Battle Rifle")
-B2("Revolver")
-B2("Flamethrower")
-B2("Auto Shotgun")
-B2("Hand Cannon")
-B2("Hunting Rifle")
+local function B1()
+	Tab2:AddButton({
+		Name = "All Guns Fire 30 more bullets",
+		Callback = function()
+			for i,v in pairs(path1:GetChildren()) do
+				if v:IsA("ModuleScript") and v.Name ~= "Minigun" then
+				    BulletBuff(v.Name)
+				end
+			end
+		end
+	})
+end
+
+local function B3()
+	Tab2:AddButton({
+		Name = "All Guns InstaReload",
+		Callback = function()
+			for i,v in pairs(path1:GetChildren()) do
+				if v:IsA("ModuleScript") and v.Name ~= "Minigun" then
+				    InstaReload(v.Name)
+				end
+			end
+		end
+	})
+end
+
+B2()
+B1()
+B3()
 
 Tab2:AddButton({
-	Name = "Minigun Mod",
+	Name = "Minigun Buff",
 	Callback = function()
 		local a = require(game.ReplicatedStorage.Modules.Tools.Gun.Settings.Minigun)
 		a.WindUp = 0
 		a.AmmoPerMag = 9999
-		a.ReloadTime = 0.1
+		a.ReloadTime = 0
 		a.HeadshotDamageMultiplier = 5
 		a.MaxPierce = 50
+		a.ProjectilesPerShot = 50
+		a.Spread = 1
+		a.ProjectileSpeed = 9999
 	end
 })
 
 
-Tab2:AddLabel("NPC mods (coming soon)")
+Tab2:AddLabel("NPC mods (wip)")
+
+Tab2:AddButton({
+	Name = "Disable most enemy guns",
+	Callback = function()
+		for i,v in pairs(game.ReplicatedStorage.Modules.Tools.Gun.Settings:GetChildren()) do
+			if table.find({"EnemyShotgun", "EnemySniperRifle", "EnemyMinigun", "EnemyHuntingRifle"}, v.Name) then
+				local a = require(v)
+				a.AmmoPerMag = 1
+				a.ProjectilesPerShot = 0
+				a.ReloadTime = 999
+			end
+		end
+	end
+})
