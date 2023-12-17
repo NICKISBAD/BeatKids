@@ -15,6 +15,27 @@ local Tab = _G.Window:MakeTab({
 	PremiumOnly = false
 })
 
+local function AntiRange(Gun)
+	local a = require(game:GetService("ReplicatedStorage").Modules.Tools.Gun.Settings[Gun])
+	
+	a.NPCProjectileSpeed = 1
+end
+
+local function GunMod(GunName)
+	local Obj = require(game:GetService("ReplicatedStorage").Modules.Tools.Gun.Settings[GunName])
+	
+	Obj.AmmoPerMag = 1000
+	Obj.Automatic = true
+	Obj.ReloadTime = 0
+	Obj.Spread = 0
+	Obj.FireRate = 0.1
+    Obj.Range = 250
+    Obj.Knockback = 0
+    Obj.ProjectileSpeed = 500
+    Obj.MaxPierce = 999
+end
+
+
 _G.MilitantFarm = false
 _G.DarkAges = false
 
@@ -38,14 +59,6 @@ game:GetService("ReplicatedStorage").Remotes.MeleeAttacked:FireServer(unpack(arg
 end
 
 _G.AutoParry = false
-
-Tab:AddButton({
-       Name = "Safezone",
-	Callback = function()
-		game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3.81075764, 100.480156, -6167.9248, -0.99361527, 0.00642877631, -0.11263819, -7.7722987e-05, 0.998335958, 0.0576654263, 0.112821475, 0.0573060028, -0.99196136)
-	end
-})
 
 Tab:AddToggle({
 	Name = "AutoParry (face target, hold sword)",
@@ -75,7 +88,7 @@ spawn(function()
 		if _G.MilitantFarm then
 			for i,v in pairs(game.Workspace:GetChildren()) do
 				if table.find({"Meleer Militant", "Gunner Militant", "Grenader Militant", "Medic Militant", "Combatant Militant", "Brute Militant", "Viper", "Juggernaut"}, v.Name) then
-					CannonDamage(v:WaitForChild("HumanoidRootPart").Position)
+					CannonDamage(v:WaitForChild("HumanoidRootPart").Position) wait(1)
 			  end
 	       end
 		end
@@ -151,7 +164,7 @@ spawn(function()
 		if _G.KillTargets then
 			for i,v in pairs(game.Workspace:GetChildren()) do
 				if table.find(EnemyTargets, v.Name) then
-		                 CannonDamage(v.Torso.Position)
+		            CannonDamage(v.Torso.Position) wait(1)
 				end
 			end
 		end
@@ -168,7 +181,7 @@ spawn(function()
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if table.find({"Mummy", "Fast Mummy", "Strong Mummy", "Sandstone", "Camel", "Carium"}, v.Name) then
                     if cooldownCounter == 0 then
-                         CannonDamage(v.Torso.Position)
+                        CannonDamage(v.Torso.Position) wait(1)
                         cooldownCounter = cooldownDuration
                     else
                         cooldownCounter = cooldownCounter - 1
@@ -186,7 +199,7 @@ spawn(function()
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if v.Name:match("Robloxian") or v.Name:match("Rox") then
                     if cooldownCounter == 0 then
-                        CannonDamage(v.Torso.Position) 
+                        CannonDamage(v.Torso.Position) wait(1)
                         cooldownCounter = cooldownDuration
                     else
                         cooldownCounter = cooldownCounter - 1
@@ -204,7 +217,7 @@ spawn(function()
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if table.find({"Goblin","Orc","Buster Goblin","Skeleton","Adalwolf","Gavin The Wizard", "Red Fungus", "Blue Fungus", "Green Fungus", "Yellow Fungus"}, v.Name) then
                     if cooldownCounter == 0 then
-                        CannonDamage(v.Torso.Position)
+                        CannonDamage(v.Torso.Position) wait(1)
                         cooldownCounter = cooldownDuration
                     else
                         cooldownCounter = cooldownCounter - 1
@@ -214,3 +227,67 @@ spawn(function()
         end
     end
 end)
+
+local Tab2 = _G.Window:MakeTab({
+	Name = "Gun Mods",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local function B2(GunName)
+	Tab2:AddButton({
+		Name = GunName .. " Mod",
+		Callback = function()
+			GunMod(GunName)
+		end
+	})
+end
+
+B2("Pistol")
+B2("Assault Rifle")
+B2("Shotgun")
+B2("Sniper Rifle")
+B2("Blunder Buss")
+B2("Battle Rifle")
+B2("Revolver")
+B2("Flamethrower")
+B2("Auto Shotgun")
+B2("Hand Cannon")
+B2("Hunting Rifle")
+
+Tab2:AddButton({
+	Name = "Minigun Mod",
+	Callback = function()
+		local a = require(game.ReplicatedStorage.Modules.Tools.Gun.Settings.Minigun)
+		a.WindUp = 0
+		a.AmmoPerMag = 9999
+		a.ReloadTime = 0.1
+		a.HeadshotDamageMultiplier = 5
+		a.MaxPierce = 50
+	end
+})
+
+
+Tab2:AddLabel("NPC mods")
+
+local function N1(gun)
+	Tab2:AddButton({
+		Name = gun .. " bullet speed = 0",
+		Callback = function()
+			AntiRange(gun)
+		end
+	})
+end
+
+N1("Pistol")
+N1("Assault Rifle")
+N1("Shotgun")
+N1("Sniper Rifle")
+N1("Blunder Buss")
+N1("Battle Rifle")
+N1("Revolver")
+N1("Flamethrower")
+N1("Auto Shotgun")
+N1("Hand Cannon")
+N1("Hunting Rifle")
+N1("Minigun")
