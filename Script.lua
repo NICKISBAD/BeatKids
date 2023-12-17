@@ -268,26 +268,4 @@ Tab2:AddButton({
 })
 
 
-Tab2:AddLabel("NPC mods")
-
-local function N1(gun)
-	Tab2:AddButton({
-		Name = gun .. " bullet speed = 0",
-		Callback = function()
-			AntiRange(gun)
-		end
-	})
-end
-
-N1("Pistol")
-N1("Assault Rifle")
-N1("Shotgun")
-N1("Sniper Rifle")
-N1("Blunder Buss")
-N1("Battle Rifle")
-N1("Revolver")
-N1("Flamethrower")
-N1("Auto Shotgun")
-N1("Hand Cannon")
-N1("Hunting Rifle")
-N1("Minigun")
+Tab2:AddLabel("NPC mods (coming soon)")
