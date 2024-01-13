@@ -59,6 +59,7 @@ game:GetService("ReplicatedStorage").Remotes.MeleeAttacked:FireServer(unpack(arg
 end
 
 _G.AutoParry = false
+_G.AutoSFOTH = false
 
 Tab:AddToggle({
 	Name = "AutoParry (face target, hold sword)",
@@ -83,16 +84,36 @@ Tab:AddToggle({
 	end
 })
 
+Tab:AddToggle({
+	Name = "Auto SFOTH",
+	Default = false,
+	Callback = function(v)
+		_G.AutoSFOTH = v
+	end
+})
+
 spawn(function()
-	while wait() do
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.AutoSFOTH then
+			for i,v in pairs(game.Workspace:GetChildren()) do
+				if v.Name:match("Fighter") or table.find({"Sword Master", "Shedletsky"}, v.Name) then
+					CannonDamage(v:WaitForChild("HumanoidRootPart").Position) wait(0.5)
+				end
+			end
+		end
+	end)
+end)
+
+spawn(function()
+	game:GetService("RunService").RenderStepped:Connect(function()
 		if _G.MilitantFarm then
 			for i,v in pairs(game.Workspace:GetChildren()) do
 				if table.find({"Meleer Militant", "Gunner Militant", "Grenader Militant", "Medic Militant", "Combatant Militant", "Brute Militant", "Viper", "Juggernaut"}, v.Name) then
-					CannonDamage(v:WaitForChild("HumanoidRootPart").Position) wait(1)
+					CannonDamage(v:WaitForChild("HumanoidRootPart").Position) wait(0.5)
 			  end
 	       end
 		end
-	end
+	end)
 end)
 
 Tab:AddToggle({
@@ -160,72 +181,51 @@ Tab:AddButton({
 })
 
 spawn(function()
-	while wait() do
+	game:GetService("RunService").RenderStepped:Connect(function()
 		if _G.KillTargets then
 			for i,v in pairs(game.Workspace:GetChildren()) do
 				if table.find(EnemyTargets, v.Name) then
-		            CannonDamage(v.Torso.Position) wait(1)
+		            CannonDamage(v.Torso.Position) wait(0.5)
 				end
 			end
 		end
-	end
+	end)
 end)
 
-local cooldownCounter = 0
-local cooldownDuration = 1
-
--- Loop for Desert
 spawn(function()
-    while wait() do
+    game:GetService("RunService").RenderStepped:Connect(function()
         if _G.Desert then
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if table.find({"Mummy", "Fast Mummy", "Strong Mummy", "Sandstone", "Camel", "Carium"}, v.Name) then
-                    if cooldownCounter == 0 then
-                        CannonDamage(v.Torso.Position) wait(1)
-                        cooldownCounter = cooldownDuration
-                    else
-                        cooldownCounter = cooldownCounter - 1
-                    end
+                    CannonDamage(v.Torso.Position) wait(0.5)
                 end
             end
         end
-    end
+    end)
 end)
 
--- Loop for Park
 spawn(function()
-    while wait() do
+    game:GetService("RunService").RenderStepped:Connect(function()
         if _G.Park then
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if v.Name:match("Robloxian") or v.Name:match("Rox") then
-                    if cooldownCounter == 0 then
-                        CannonDamage(v.Torso.Position) wait(1)
-                        cooldownCounter = cooldownDuration
-                    else
-                        cooldownCounter = cooldownCounter - 1
-                    end
+                    CannonDamage(v.Torso.Position) wait(0.5)
                 end
             end
         end
-    end
+    end)
 end)
 
--- Loop for DarkAges
 spawn(function()
-    while wait() do
+    game:GetService("RunService").RenderStepped:Connect(function()
         if _G.DarkAges then
             for i, v in pairs(game.Workspace:GetChildren()) do
                 if table.find({"Goblin","Orc","Buster Goblin","Skeleton","Adalwolf","Gavin The Wizard", "Red Fungus", "Blue Fungus", "Green Fungus", "Yellow Fungus"}, v.Name) then
-                    if cooldownCounter == 0 then
-                        CannonDamage(v.Torso.Position) wait(1)
-                        cooldownCounter = cooldownDuration
-                    else
-                        cooldownCounter = cooldownCounter - 1
-                    end
+                    CannonDamage(v.Torso.Position) wait(0.5)
                 end
             end
         end
-    end
+    end)
 end)
 
 local Tab2 = _G.Window:MakeTab({
@@ -331,5 +331,120 @@ Tab2:AddButton({
 				a.ReloadTime = 999
 			end
 		end
+	end
+})
+
+local SafeZone = _G.Window:MakeTab({
+	Name = "Safezones",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local floatHeight = 1
+local holdPosition = false
+
+local safeZones = {
+    Park = CFrame.new(14.0842438, 133.564026, 3.3986516),
+    Desert = CFrame.new(-3978.21851, 13.8664827, 543.097168),
+    ["Dark Ages"] = CFrame.new(-6.92320204, 87.0278168, 5537.1416),
+    ["Militant Outpost"] = CFrame.new(-6.01704359, 136.325378, -6152.89893),
+    SFOTH = CFrame.new(7998.43896, 98.4540787, 7999.72461)
+}
+
+local function freezeplr(position)
+    humanoidRootPart.CFrame = position * CFrame.new(0, floatHeight, 0)
+    holdPosition = true
+    game.RunService.Heartbeat:Connect(function()
+    	if holdPosition then
+	        wait()
+	        humanoidRootPart.CFrame = position * CFrame.new(0, floatHeight, 0)
+	    end
+    end)
+end
+
+local function unfreezeplr()
+    holdPosition = false
+end
+
+local function safezone(zone, enabled)
+    if enabled then
+        freezeplr(safeZones[zone])
+    else
+        unfreezeplr()
+    end
+end
+
+local function newtoggle(zone)
+    SafeZone:AddToggle({
+        Name = zone,
+        Default = false,
+        Callback = function(enabled)
+            safezone(zone, enabled)
+        end
+    })
+end
+
+SafeZone:AddButton({
+    Name = "Cancel Hold",
+    Callback = function()
+        unfreezeplr()
+    end
+})
+
+for zone, _ in pairs(safeZones) do
+    newtoggle(zone)
+end
+
+local sp = _G.Window:MakeTab({
+	Name = "AutoSpawn",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local enemies = {}
+
+function SpawnEnemy(EnemyName)
+	local args = {
+	    [1] = EnemyName
+	}
+	
+	game:GetService("ReplicatedStorage").Remotes.SpawnNPC:InvokeServer(unpack(args))
+end
+
+sp:AddTextbox({
+	Name = "Enter enemy to autospawn",
+	Default = nil,
+	Callback = function(v)
+		table.insert(enemies, v)
+	end
+})
+
+local AutoSpawning = false
+
+sp:AddToggle({
+	Name = "Spawn Enemies (USES SP)",
+	Default = false,
+	Callback = function(v)
+		AutoSpawning = v
+	end
+})
+
+spawn(function()
+	game.RunService.Heartbeat:Connect(function()
+		if AutoSpawning then
+			for i,v in ipairs(enemies) do
+				SpawnEnemy(v)
+			end
+		end
+	end)
+end)
+
+sp:AddButton({
+	Name = "Clear Enemies",
+	Callback = function()
+		table.clear(enemies)
 	end
 })
