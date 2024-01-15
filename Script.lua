@@ -448,3 +448,16 @@ sp:AddButton({
 		table.clear(enemies)
 	end
 })
+
+local Special = _G.Window:MakeTab({
+	Name = "Special",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Special:AddButton({
+	Name = "Teleport to wave defense (careful not to be banned)",
+	Callback = function()
+		game:GetService('TeleportService'):Teleport(15962264362)
+	end
+})
